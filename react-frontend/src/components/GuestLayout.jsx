@@ -7,7 +7,7 @@ export default function GuestLayout(){
         return <Navigate to="/" />
     }
     return (
-        <div>
+        <div className="text-emerald-500">
             <h1>Guest Layout</h1>
             <Outlet />
         </div>

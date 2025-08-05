@@ -10,7 +10,7 @@ export default function DefaultLayout(){
     }
 
     return (
-        <div>
+        <div className="text-emerald-500">
             <h1>Default Layout</h1>
             <Outlet />
         </div>
