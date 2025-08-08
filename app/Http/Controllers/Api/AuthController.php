@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\SignupRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -16,7 +17,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'password' =>$data['password'],
         ]);
 
         $token = $user->createToken('main')->plainTextToken;
@@ -24,19 +25,27 @@ class AuthController extends Controller
         return response(compact('user', 'token'));
     }
 
-    public function login(LoginRequest $request){
-        $credentials = $request->validated();
-        if(!Auth::attempt($credentials)){
+
+    public function login(LoginRequest $request) {
+        $data = $request->validated();
+
+        // Find user by email
+        $user = User::where('email', $data['email'])->first();
+
+        // Check if user exists and password matches
+        if (!$user || !Hash::check($data['password'], $user->password)) {
             return response([
                 'message' => 'Provide a valid email address or the password is incorrect'
             ], 422);
         }
 
-        $user = Auth::user();
-        $token = $user->createToken('main')->plainTextToken;
+    // Create token
+    $token = $user->createToken('main')->plainTextToken;
 
-        return response(compact('user', 'token'));
-    }
+    // Return user and token
+    return response(compact('user', 'token'));
+}
+
 
     public function logout($request){
         $user = $request->user();
